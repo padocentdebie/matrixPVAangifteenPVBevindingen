@@ -1,0 +1,42 @@
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBEod8zm1jvvkmPbe6cA_SQo2U_esC9yTY",
+    authDomain: "aangiftebotje.firebaseapp.com",
+    databaseURL: "https://aangiftebotje-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "aangiftebotje",
+    appId: "1:825633841222:web:15d93d08e2b719285dea47"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const rtdb = firebase.database(); // We gebruiken hier de Realtime Database
+
+  // Highlight functie via Realtime Database
+  function updateFocus(id) {
+    rtdb.ref('config/les').update({ focus: id });
+  }
+
+  // Luisteren naar highlight
+  rtdb.ref('config/les').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      document.querySelectorAll('.onderdeel-pv').forEach(el => el.classList.remove('highlight'));
+      if (data.focus !== 'geen') {
+        document.getElementById(data.focus).classList.add('highlight');
+      }
+    }
+  });
+
+  // Opslaan van de Onderdelen PV
+  function saveWork() {
+    const studentId = "anoniem_student"; // In de les uniek maken
+    rtdb.ref('les_feed/' + studentId).set({
+      voor: document.getElementById('txt-voor').value,
+      tijdens: document.getElementById('txt-tijdens').value,
+      na: document.getElementById('txt-na').value,
+      timestamp: Date.now()
+    });
+  }
+</script>
